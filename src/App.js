@@ -1,23 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import Node from "./Node/Node";
+import "./Node/Node.css";
 
 function App() {
+  const height = 10;
+  const width = 50;
+  const [dummy, setDummy] = useState(0);
+  const [nodeStates, setNodeStates] = useState([]);
+
+  useEffect(() => {
+    setNodeStates([<Node />, <Node />, <Node />, <Node />]);
+  }, []);
+
+  const change = () => {
+    setDummy(dummy + 1);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {nodeStates.map((node, key) => {
+        return <div key={key}>{node}</div>;
+      })}
+      <button
+        onClick={() => {
+          change();
+        }}
+      >
+        change
+      </button>
     </div>
   );
 }
