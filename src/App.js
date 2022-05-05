@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Node from "./Node/Node";
-import "./Node/Node.css";
+import "./grid.css";
 
 function App() {
   const height = 10;
@@ -19,7 +19,17 @@ function App() {
   return (
     <div>
       {nodeStates.map((node, key) => {
-        return <div key={key}>{node}</div>;
+        return (
+          <div
+            className="node-holder"
+            key={key}
+            onMouseEnter={() => {
+              console.log(key);
+            }}
+          >
+            {node}
+          </div>
+        );
       })}
       <button
         onClick={() => {

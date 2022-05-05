@@ -4,7 +4,7 @@ import "./Node.css";
 export default class Node extends Component {
   constructor(props) {
     super(props);
-    this.state = { nodeState: ["unactive"] };
+    this.state = { nodeState: ["cell"] };
   }
 
   componentDidMount() {
@@ -13,11 +13,16 @@ export default class Node extends Component {
 
   stateString() {
     var str = "";
-    console.log(this.state);
     for (var i = 0; i < this.state.nodeState.length; i++) {
       str += this.state.nodeState[i] + " ";
     }
     return str;
+  }
+
+  hover() {
+    this.setState((prevState) => ({
+      nodeState: [...prevState.nodeState, "hover"],
+    }));
   }
 
   render() {

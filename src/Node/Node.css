@@ -1,5 +1,14 @@
-.unactive {
+.cell {
   width: 1em;
   height: 1em;
   border: 1px solid;
+}
+.unactive {
+  background-color: white;
+}
+.active {
+  background-color: rgb(0, 202, 135);
+}
+.hover {
+  border: 2px solid;
 }
