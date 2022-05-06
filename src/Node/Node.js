@@ -7,10 +7,6 @@ export default class Node extends Component {
     this.state = { nodeState: ["cell"] };
   }
 
-  componentDidMount() {
-    console.log(this.state);
-  }
-
   stateString() {
     var str = "";
     for (var i = 0; i < this.state.nodeState.length; i++) {
@@ -26,6 +22,6 @@ export default class Node extends Component {
   }
 
   render() {
-    return <div className={this.stateString()}></div>;
+    return <div></div>;
   }
 }

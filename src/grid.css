@@ -1,4 +1,8 @@
-.node-holder {
-  width: 1.3em;
-  height: 1.3em;
+.row {
+  display: inline-block;
+}
+.node-wrapper {
+  width: 1em;
+  height: 1em;
+  margin: 0.4em;
 }
