@@ -1,0 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200&display=swap");
+
+.title {
+  font-family: "Poppins", sans-serif;
+  font-weight: 100;
+  text-align: center;
+  font-size: 5em;
+  margin: 0;
+  padding: 0;
+}
+.vis-button {
+  margin: auto;
+  margin-top: 3em;
+  display: block;
+}

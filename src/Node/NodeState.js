@@ -1,7 +1,15 @@
 export default class NodeState {
-  constructor() {
-    this.nodeState = ["cell", "unactive"];
-    this.active = false;
+  constructor(type) {
+    this.nodeState = ["cell"];
+    if (type === "start") {
+      this.nodeState.push("start");
+      this.active = true;
+      this.start = true;
+    } else {
+      this.nodeState.push("unactive");
+      this.active = false;
+      this.start = false;
+    }
   }
   stateString() {
     var str = "";
@@ -9,6 +17,13 @@ export default class NodeState {
       str += this.nodeState[i] + " ";
     }
     return str;
+  }
+  setStart() {
+    this.start = true;
+    this.nodeState = ["cell", "start"];
+  }
+  getStart() {
+    return this.start;
   }
   setHover() {
     this.nodeState.push("hover");
@@ -22,5 +37,10 @@ export default class NodeState {
   }
   getActive() {
     return this.active;
+  }
+  setUnactive() {
+    this.active = false;
+    this.start = false;
+    this.nodeState = ["cell", "unactive"];
   }
 }

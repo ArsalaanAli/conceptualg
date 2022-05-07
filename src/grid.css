@@ -4,5 +4,10 @@
 .node-wrapper {
   width: 1em;
   height: 1em;
-  margin: 0.4em;
+  margin: 0.5em;
+}
+.grid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

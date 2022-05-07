@@ -1,8 +1,12 @@
 .cell {
-  width: 1em;
-  height: 1em;
+  width: 1.5em;
+  height: 1.5em;
   border: 2px solid;
+  margin-top: 1em;
   border-radius: 5px;
+}
+.start {
+  background-color: rgb(26, 116, 86);
 }
 .unactive {
   background-color: white;
