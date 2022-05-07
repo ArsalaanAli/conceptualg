@@ -5,16 +5,16 @@ import "./Node/Node.css";
 import "./grid.css";
 
 function App() {
-  const height = 10;
-  const width = 50;
+  const height = 20;
+  const width = 30;
   const [dummy, setDummy] = useState(0);
   const [nodeStates, setNodeStates] = useState([]);
 
   useEffect(() => {
     const stateArray = [];
-    for (var i = 0; i < 30; i++) {
+    for (var i = 0; i < width; i++) {
       const temp = [];
-      for (var j = 0; j < 20; j++) {
+      for (var j = 0; j < height; j++) {
         temp.push(new NodeState());
       }
       stateArray.push(temp);
@@ -26,16 +26,40 @@ function App() {
     setDummy(dummy + 1);
   };
 
+  const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+
   const setHover = (row, col) => {
     var tempState = [...nodeStates];
-    tempState[row][col].hover();
+    tempState[row][col].setHover();
     setNodeStates(tempState);
   };
 
   const unsetHover = (row, col) => {
     var tempState = [...nodeStates];
-    tempState[row][col].unhover();
+    tempState[row][col].unsetHover();
     setNodeStates(tempState);
+  };
+  const setActive = (row, col) => {
+    var tempState = [...nodeStates];
+    tempState[row][col].setActive();
+    setNodeStates(tempState);
+  };
+
+  const chainEffect = async (row, col) => {
+    if (row < 0 || row >= width || col < 0 || col >= height) {
+      return;
+    }
+    if (nodeStates[row][col].getActive()) {
+      return;
+    }
+    var tempState = [...nodeStates];
+    tempState[row][col].setActive();
+    setNodeStates(tempState);
+    await delay(100);
+    chainEffect(row + 1, col, tempState);
+    chainEffect(row - 1, col, tempState);
+    chainEffect(row, col + 1, tempState);
+    chainEffect(row, col - 1, tempState);
   };
 
   return (
@@ -54,6 +78,9 @@ function App() {
                   }}
                   onMouseLeave={() => {
                     unsetHover(rowkey, colkey);
+                  }}
+                  onMouseUp={() => {
+                    chainEffect(rowkey, colkey);
                   }}
                 >
                   <div className={nodeStates[rowkey][colkey].stateString()} />
