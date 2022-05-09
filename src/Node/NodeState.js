@@ -3,12 +3,10 @@ export default class NodeState {
     this.nodeState = ["cell"];
     if (type === "start") {
       this.nodeState.push("start");
-      this.active = true;
-      this.start = true;
+    } else if (type === "goal") {
+      this.nodeState.push("goal");
     } else {
       this.nodeState.push("unactive");
-      this.active = false;
-      this.start = false;
     }
   }
   stateString() {
@@ -23,7 +21,7 @@ export default class NodeState {
     this.nodeState = ["cell", "start"];
   }
   getStart() {
-    return this.start;
+    return this.nodeState.includes("start");
   }
   setHover() {
     this.nodeState.push("hover");
@@ -33,14 +31,20 @@ export default class NodeState {
   }
   setActive() {
     this.nodeState.push("active");
-    this.active = true;
   }
   getActive() {
-    return this.active;
+    return this.nodeState.includes("active");
   }
   setUnactive() {
-    this.active = false;
-    this.start = false;
     this.nodeState = ["cell", "unactive"];
+  }
+  setGoal() {
+    this.nodeState = ["cell", "goal"];
+  }
+  getGoal() {
+    return this.nodeState.includes("goal");
+  }
+  setPath() {
+    this.nodeState = ["cell", "path"];
   }
 }

@@ -1,3 +1,9 @@
+:root {
+  --active: rgb(0, 255, 170);
+  --start: rgb(0, 238, 255);
+  --goal: rgb(255, 0, 157);
+  --path: rgb(255, 252, 52);
+}
 .cell {
   width: 1.5em;
   height: 1.5em;
@@ -6,15 +12,23 @@
   border-radius: 5px;
 }
 .start {
-  background-color: rgb(26, 116, 86);
+  background-color: var(--start);
+}
+.goal {
+  background-color: var(--goal);
 }
 .unactive {
   background-color: white;
 }
 .active {
-  background-color: rgb(0, 255, 170);
-  clip-path: circle(5%);
+  background-color: var(--active);
   animation-name: circle-fill;
+  animation-duration: 2s;
+  animation-fill-mode: forwards;
+}
+.path {
+  background-color: var(--path);
+  animation-name: path-fill;
   animation-duration: 2s;
   animation-fill-mode: forwards;
 }
@@ -32,5 +46,19 @@
   100% {
     clip-path: circle(100%);
     background-color: rgb(0, 255, 170);
+  }
+}
+
+@keyframes path-fill {
+  0% {
+    clip-path: circle(0%);
+    background-color: var(--goal);
+  }
+  50% {
+    clip-path: circle(100%);
+  }
+  100% {
+    clip-path: circle(100%);
+    background-color: var(--path);
   }
 }

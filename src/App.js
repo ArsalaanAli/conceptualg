@@ -9,8 +9,11 @@ function App() {
   const height = 20;
   const width = 30;
   const [startNode, setStartNode] = useState([15, 10]);
+  const [goalNode, setGoalNode] = useState([28, 10]);
+  var doneSearching = false;
   const [dummy, setDummy] = useState(0);
   const [nodeStates, setNodeStates] = useState([]);
+  const [queue, setQueue] = useState([]);
 
   useEffect(() => {
     const stateArray = [];
@@ -19,6 +22,10 @@ function App() {
       for (var j = 0; j < height; j++) {
         if (i === startNode[0] && j === startNode[1]) {
           temp.push(new NodeState("start"));
+          continue;
+        }
+        if (i === goalNode[0] && j === goalNode[1]) {
+          temp.push(new NodeState("goal"));
           continue;
         }
         temp.push(new NodeState());
@@ -59,23 +66,55 @@ function App() {
     setNodeStates(tempState);
   };
 
-  const chainEffect = async (row, col) => {
-    if (row < 0 || row >= width || col < 0 || col >= height) {
-      return;
-    }
-    if (!nodeStates[row][col].getStart() && nodeStates[row][col].getActive()) {
-      return;
-    }
+  const setGoal = (row, col) => {
     var tempState = [...nodeStates];
-    if (!nodeStates[row][col].getStart()) {
-      tempState[row][col].setActive();
-    }
+    tempState[row][col].setGoal();
     setNodeStates(tempState);
-    await delay(100);
-    chainEffect(row + 1, col, tempState);
-    chainEffect(row - 1, col, tempState);
-    chainEffect(row, col + 1, tempState);
-    chainEffect(row, col - 1, tempState);
+  };
+
+  const setPath = (row, col) => {
+    var tempState = [...nodeStates];
+    tempState[row][col].setPath();
+    setNodeStates(tempState);
+  };
+
+  const tracePath = async (pathArray) => {
+    for (var i = pathArray.length - 1; i >= 1; i--) {
+      await delay(200);
+      setPath(pathArray[i][0], pathArray[i][1]);
+    }
+  };
+
+  const djikstra = async (row, col, pathArray) => {
+    //check if goal has been found
+    if (doneSearching) {
+      return;
+    }
+    //check if at goal
+    if (row === goalNode[0] && col === goalNode[1]) {
+      console.log("found");
+      doneSearching = true;
+      tracePath(pathArray);
+    }
+    //checking boundaries
+    if (row < 0 || col < 0 || row >= width || col >= height) {
+      return;
+    }
+    //checking if already visited
+    if (nodeStates[row][col].getActive()) {
+      return;
+    }
+    //set active if not start or goal
+    if (!nodeStates[row][col].getStart() && !nodeStates[row][col].getGoal()) {
+      var tempState = [...nodeStates];
+      tempState[row][col].setActive();
+      setNodeStates(tempState);
+    }
+    await delay(200);
+    djikstra(row + 1, col, [...pathArray, [row, col]]);
+    djikstra(row - 1, col, [...pathArray, [row, col]]);
+    djikstra(row, col - 1, [...pathArray, [row, col]]);
+    djikstra(row, col + 1, [...pathArray, [row, col]]);
   };
 
   return (
@@ -114,7 +153,7 @@ function App() {
       <button
         className="vis-button"
         onClick={() => {
-          chainEffect(startNode[0], startNode[1]);
+          djikstra(startNode[0], startNode[1], []);
         }}
       >
         VISUALIZE
