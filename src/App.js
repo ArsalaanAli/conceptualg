@@ -40,6 +40,26 @@ function App() {
     setDummy(dummy + 1);
   };
 
+  const clearBoard = () => {
+    const stateArray = [];
+    for (var i = 0; i < width; i++) {
+      const temp = [];
+      for (var j = 0; j < height; j++) {
+        if (i === startNode[0] && j === startNode[1]) {
+          temp.push(new NodeState("start"));
+          continue;
+        }
+        if (i === goalNode[0] && j === goalNode[1]) {
+          temp.push(new NodeState("goal"));
+          continue;
+        }
+        temp.push(new NodeState());
+      }
+      stateArray.push(temp);
+    }
+    setNodeStates(stateArray);
+  };
+
   const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
   const setHover = (row, col) => {
@@ -179,6 +199,14 @@ function App() {
         }}
       >
         VISUALIZE
+      </button>
+      <button
+        className="clear-button"
+        onClick={() => {
+          clearBoard();
+        }}
+      >
+        CLEAR BOARD
       </button>
     </div>
   );

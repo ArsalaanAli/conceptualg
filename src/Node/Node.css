@@ -42,7 +42,7 @@
 @keyframes circle-fill {
   0% {
     clip-path: circle(0%);
-    background-color: rgb(255, 238, 0);
+    background-color: var(--path);
   }
   50% {
     clip-path: circle(100%);

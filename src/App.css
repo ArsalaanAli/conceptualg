@@ -1,5 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200&display=swap");
-
+:root {
+  --active: rgb(0, 255, 170);
+  --start: rgb(0, 238, 255);
+  --goal: rgb(255, 0, 157);
+  --path: rgb(255, 252, 52);
+  --wall: rgb(86, 90, 89);
+}
 .title {
   font-family: "Poppins", sans-serif;
   font-weight: 100;
@@ -7,6 +13,10 @@
   font-size: 5em;
   margin: 0;
   padding: 0;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: var(--active);
 }
 .vis-button {
   margin: auto;
@@ -19,7 +29,25 @@
   border: 2px solid black;
   border-radius: 8px;
   background-color: transparent;
+  transition-duration: 1s;
 }
 .vis-button:hover {
-  border: 3px solid black;
+  background-color: var(--active);
+}
+
+.clear-button {
+  margin: auto;
+  margin-top: 1em;
+  padding: 0em 0.5em;
+  display: block;
+  font-family: "Poppins", sans-serif;
+  font-weight: 200;
+  font-size: 1.5em;
+  border: 2px solid black;
+  border-radius: 8px;
+  background-color: transparent;
+  transition-duration: 1s;
+}
+.clear-button:hover {
+  background-color: var(--active);
 }
