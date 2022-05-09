@@ -11,6 +11,7 @@ function App() {
   const [startNode, setStartNode] = useState([15, 10]);
   const [goalNode, setGoalNode] = useState([28, 10]);
   var doneSearching = false;
+  const [draw, setDraw] = useState(false);
   const [dummy, setDummy] = useState(0);
   const [nodeStates, setNodeStates] = useState([]);
   const [queue, setQueue] = useState([]);
@@ -59,11 +60,13 @@ function App() {
   };
 
   const setStart = (row, col) => {
-    var tempState = [...nodeStates];
-    tempState[startNode[0]][startNode[1]].setUnactive();
-    tempState[row][col].setStart();
-    setStartNode([row, col]);
-    setNodeStates(tempState);
+    if (!nodeStates[row][col].getGoal()) {
+      var tempState = [...nodeStates];
+      tempState[startNode[0]][startNode[1]].setUnactive();
+      tempState[row][col].setStart();
+      setStartNode([row, col]);
+      setNodeStates(tempState);
+    }
   };
 
   const setGoal = (row, col) => {
@@ -76,6 +79,14 @@ function App() {
     var tempState = [...nodeStates];
     tempState[row][col].setPath();
     setNodeStates(tempState);
+  };
+
+  const setWall = (row, col) => {
+    if (!nodeStates[row][col].getGoal() && !nodeStates[row][col].getStart()) {
+      var tempState = [...nodeStates];
+      tempState[row][col].setWall();
+      setNodeStates(tempState);
+    }
   };
 
   const tracePath = async (pathArray) => {
@@ -100,8 +111,8 @@ function App() {
     if (row < 0 || col < 0 || row >= width || col >= height) {
       return;
     }
-    //checking if already visited
-    if (nodeStates[row][col].getActive()) {
+    //checking if already visited or wall
+    if (nodeStates[row][col].getActive() || nodeStates[row][col].getWall()) {
       return;
     }
     //set active if not start or goal
@@ -122,7 +133,15 @@ function App() {
       <h1 className="title">VISUALG</h1>
 
       {/* GRID */}
-      <div className="grid">
+      <div
+        className="grid"
+        onMouseDown={() => {
+          setDraw(true);
+        }}
+        onMouseUp={() => {
+          setDraw(false);
+        }}
+      >
         {nodeStates.map((row, key) => {
           var rowkey = key;
           return (
@@ -133,13 +152,16 @@ function App() {
                   <div
                     className="node-wrapper"
                     onMouseEnter={() => {
+                      if (draw) {
+                        setWall(rowkey, colkey);
+                      }
                       setHover(rowkey, colkey);
                     }}
                     onMouseLeave={() => {
                       unsetHover(rowkey, colkey);
                     }}
-                    onMouseUp={() => {
-                      setStart(rowkey, colkey);
+                    onMouseDown={() => {
+                      setWall(rowkey, colkey);
                     }}
                   >
                     <div className={nodeStates[rowkey][colkey].stateString()} />

@@ -47,4 +47,10 @@ export default class NodeState {
   setPath() {
     this.nodeState = ["cell", "path"];
   }
+  setWall() {
+    this.nodeState = ["cell", "wall"];
+  }
+  getWall() {
+    return this.nodeState.includes("wall");
+  }
 }
