@@ -42,7 +42,7 @@
   display: block;
   font-family: "Poppins", sans-serif;
   font-weight: 200;
-  font-size: 1.5em;
+  font-size: 1.1em;
   border: 2px solid black;
   border-radius: 8px;
   background-color: transparent;
@@ -50,4 +50,48 @@
 }
 .clear-button:hover {
   background-color: var(--active);
+}
+
+.optionWrapper {
+  position: absolute;
+}
+.optionSpan {
+  display: block;
+  margin: 5em 3em;
+}
+.optionText {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 0.5em;
+  height: 100%;
+  font-family: "Poppins", sans-serif;
+  font-weight: 200;
+}
+
+.startOption {
+  display: inline-block;
+  width: 3em;
+  height: 3em;
+  border: 2px solid;
+  border-radius: 5px;
+  background-color: var(--start);
+  vertical-align: middle;
+}
+.wallOption {
+  display: inline-block;
+  width: 3em;
+  height: 3em;
+  border: 2px solid;
+  border-radius: 5px;
+  background-color: var(--wall);
+  vertical-align: middle;
+}
+.targetOption {
+  display: inline-block;
+  width: 3em;
+  height: 3em;
+  border: 2px solid;
+  border-radius: 5px;
+  background-color: var(--goal);
+  vertical-align: middle;
 }

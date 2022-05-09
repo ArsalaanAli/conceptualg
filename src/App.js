@@ -152,6 +152,24 @@ function App() {
     <div>
       <h1 className="title">VISUALG</h1>
 
+      {/* CHOOSE DRAWING OPTION */}
+      <div className="optionWrapper">
+        <span className="optionSpan">
+          <div className="startOption"></div>
+          <h1 className="optionText">START NODE</h1>
+        </span>
+
+        <span className="optionSpan">
+          <div className="wallOption"></div>
+          <h1 className="optionText">WALL NODE</h1>
+        </span>
+
+        <span className="optionSpan">
+          <div className="targetOption"></div>
+          <h1 className="optionText">TARGET NODE</h1>
+        </span>
+      </div>
+
       {/* GRID */}
       <div
         className="grid"
