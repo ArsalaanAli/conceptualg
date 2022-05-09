@@ -58,6 +58,7 @@
 .optionSpan {
   display: block;
   margin: 5em 3em;
+  cursor: pointer;
 }
 .optionText {
   display: inline-block;
@@ -94,4 +95,22 @@
   border-radius: 5px;
   background-color: var(--goal);
   vertical-align: middle;
+}
+
+.unactiveOption {
+  display: inline-block;
+  width: 3em;
+  height: 3em;
+  border: 2px solid;
+  border-radius: 5px;
+  background-color: transparent;
+  vertical-align: middle;
+}
+
+.underline {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: var(--active);
+  transition-duration: 0.5s;
 }

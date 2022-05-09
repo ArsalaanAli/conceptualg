@@ -15,6 +15,8 @@ function App() {
   const [dummy, setDummy] = useState(0);
   const [nodeStates, setNodeStates] = useState([]);
   const [queue, setQueue] = useState([]);
+  const [optionClass, setOptionClass] = useState(["underline", "", "", ""]);
+  const [selectedOption, setSelectedOption] = useState(0);
 
   useEffect(() => {
     const stateArray = [];
@@ -90,9 +92,13 @@ function App() {
   };
 
   const setGoal = (row, col) => {
-    var tempState = [...nodeStates];
-    tempState[row][col].setGoal();
-    setNodeStates(tempState);
+    if (!nodeStates[row][col].getStart()) {
+      var tempState = [...nodeStates];
+      tempState[goalNode[0]][goalNode[1]].setUnactive();
+      tempState[row][col].setGoal();
+      setGoalNode([row, col]);
+      setNodeStates(tempState);
+    }
   };
 
   const setPath = (row, col) => {
@@ -105,6 +111,14 @@ function App() {
     if (!nodeStates[row][col].getGoal() && !nodeStates[row][col].getStart()) {
       var tempState = [...nodeStates];
       tempState[row][col].setWall();
+      setNodeStates(tempState);
+    }
+  };
+
+  const setUnactive = (row, col) => {
+    if (!nodeStates[row][col].getGoal() && !nodeStates[row][col].getStart()) {
+      var tempState = [...nodeStates];
+      tempState[row][col].setUnactive();
       setNodeStates(tempState);
     }
   };
@@ -148,25 +162,70 @@ function App() {
     djikstra(row, col + 1, [...pathArray, [row, col]]);
   };
 
+  const drawSelectedOption = (row, col) => {
+    switch (selectedOption) {
+      case 0:
+        setStart(row, col);
+        break;
+      case 1:
+        setWall(row, col);
+        break;
+      case 2:
+        setGoal(row, col);
+        break;
+      case 3:
+        setUnactive(row, col);
+    }
+  };
+
   return (
     <div>
       <h1 className="title">VISUALG</h1>
 
       {/* CHOOSE DRAWING OPTION */}
       <div className="optionWrapper">
-        <span className="optionSpan">
+        <span
+          className="optionSpan"
+          onClick={() => {
+            setOptionClass(["underline", "", "", ""]);
+            setSelectedOption(0);
+          }}
+        >
           <div className="startOption"></div>
-          <h1 className="optionText">START NODE</h1>
+          <h1 className={"optionText " + optionClass[0]}>START NODE</h1>
         </span>
 
-        <span className="optionSpan">
+        <span
+          className="optionSpan"
+          onClick={() => {
+            setOptionClass(["", "underline", "", ""]);
+            setSelectedOption(1);
+          }}
+        >
           <div className="wallOption"></div>
-          <h1 className="optionText">WALL NODE</h1>
+          <h1 className={"optionText " + optionClass[1]}>WALL NODE</h1>
         </span>
 
-        <span className="optionSpan">
+        <span
+          className="optionSpan"
+          onClick={() => {
+            setOptionClass(["", "", "underline", ""]);
+            setSelectedOption(2);
+          }}
+        >
           <div className="targetOption"></div>
-          <h1 className="optionText">TARGET NODE</h1>
+          <h1 className={"optionText " + optionClass[2]}>TARGET NODE</h1>
+        </span>
+
+        <span
+          className="optionSpan"
+          onClick={() => {
+            setOptionClass(["", "", "", "underline"]);
+            setSelectedOption(3);
+          }}
+        >
+          <div className="unactiveOption"></div>
+          <h1 className={"optionText " + optionClass[3]}>ERASE NODE</h1>
         </span>
       </div>
 
@@ -191,7 +250,7 @@ function App() {
                     className="node-wrapper"
                     onMouseEnter={() => {
                       if (draw) {
-                        setWall(rowkey, colkey);
+                        drawSelectedOption(rowkey, colkey);
                       }
                       setHover(rowkey, colkey);
                     }}
@@ -199,7 +258,7 @@ function App() {
                       unsetHover(rowkey, colkey);
                     }}
                     onMouseDown={() => {
-                      setWall(rowkey, colkey);
+                      drawSelectedOption(rowkey, colkey);
                     }}
                   >
                     <div className={nodeStates[rowkey][colkey].stateString()} />
