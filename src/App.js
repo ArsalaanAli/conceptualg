@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Node from "./Node/Node";
 import NodeState from "./Node/NodeState";
 import "./Node/Node.css";
 import "./grid.css";
@@ -8,16 +7,34 @@ import "./App.css";
 function App() {
   const height = 20;
   const width = 30;
+  const paths = [
+    [0, 1],
+    [0, -1],
+    [1, 0],
+    [-1, 0],
+  ];
   const [startNode, setStartNode] = useState([15, 10]);
   const [goalNode, setGoalNode] = useState([28, 10]);
   var doneSearching = false;
+  const algDesc = [
+    "DJIKSTRA: SEARCHES SURROUNDING NODES AT EACH STEP, GARUNTEES SHORTEST PATH.",
+    "a",
+    "RANDOM WALK: SIMILAR TO HOW A DRUNK PERSON TRAVERSES A CITY, DOESNT GARUNTEE SHORTEST PATH (OBVIOUSLY)",
+    "",
+  ];
   const [draw, setDraw] = useState(false);
   const [dummy, setDummy] = useState(0);
   const [nodeStates, setNodeStates] = useState([]);
   const [queue, setQueue] = useState([]);
   const [optionClass, setOptionClass] = useState(["underline", "", "", ""]);
+  const [algClass, setAlgClass] = useState([
+    "algorithmOption underline",
+    "algorithmOption",
+    "algorithmOption",
+    "algorithmOption",
+  ]);
   const [selectedOption, setSelectedOption] = useState(0);
-
+  const [algOption, setAlgOption] = useState(0);
   useEffect(() => {
     const stateArray = [];
     for (var i = 0; i < width; i++) {
@@ -64,6 +81,11 @@ function App() {
 
   const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
+  function randint(min, max) {
+    // min and max included
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
   const setHover = (row, col) => {
     var tempState = [...nodeStates];
     tempState[row][col].setHover();
@@ -102,9 +124,11 @@ function App() {
   };
 
   const setPath = (row, col) => {
-    var tempState = [...nodeStates];
-    tempState[row][col].setPath();
-    setNodeStates(tempState);
+    if (!nodeStates[row][col].getStart()) {
+      var tempState = [...nodeStates];
+      tempState[row][col].setPath();
+      setNodeStates(tempState);
+    }
   };
 
   const setWall = (row, col) => {
@@ -123,9 +147,9 @@ function App() {
     }
   };
 
-  const tracePath = async (pathArray) => {
+  const tracePath = async (pathArray, delayTime) => {
     for (var i = pathArray.length - 1; i >= 1; i--) {
-      await delay(200);
+      await delay(delayTime);
       setPath(pathArray[i][0], pathArray[i][1]);
     }
   };
@@ -137,9 +161,8 @@ function App() {
     }
     //check if at goal
     if (row === goalNode[0] && col === goalNode[1]) {
-      console.log("found");
       doneSearching = true;
-      tracePath(pathArray);
+      tracePath(pathArray, 100);
     }
     //checking boundaries
     if (row < 0 || col < 0 || row >= width || col >= height) {
@@ -162,6 +185,89 @@ function App() {
     djikstra(row, col + 1, [...pathArray, [row, col]]);
   };
 
+  const astar = async () => {
+    console.log(startNode);
+    var currentNode = [...startNode];
+    var path = [];
+    var nextNode;
+    while (!doneSearching) {
+      var cost = 10000;
+      for (var i = 0; i < 4; i++) {
+        var curCost = heuristic(
+          currentNode[0] + paths[i][0],
+          currentNode[1] + paths[i][1]
+        );
+        if (curCost < cost) {
+          cost = curCost;
+          nextNode = paths[i];
+        }
+      }
+      if (cost >= 10000) {
+        break;
+      }
+      if (nodeStates[currentNode[0]][currentNode[1]].getStart()) {
+        path.push([[currentNode[0]], [currentNode[1]]]);
+      }
+      currentNode[0] += nextNode[0];
+      currentNode[1] += nextNode[1];
+      await delay(200);
+      if (
+        !nodeStates[currentNode[0]][currentNode[1]].getGoal() &&
+        !nodeStates[currentNode[0]][currentNode[1]].getStart()
+      ) {
+        setActive([currentNode[0]], [currentNode[1]]);
+        path.push([[currentNode[0]], [currentNode[1]]]);
+      }
+    }
+    if (doneSearching) {
+      console.log(startNode);
+      tracePath(path, 200);
+    }
+  };
+
+  const heuristic = (row, col) => {
+    if (nodeStates[row][col].getWall() || nodeStates[row][col].getActive()) {
+      return 100000;
+    }
+    if (nodeStates[row][col].getGoal()) {
+      doneSearching = true;
+      return -100;
+    }
+    return Math.abs(goalNode[0] - row) + Math.abs(goalNode[1] - col);
+  };
+
+  const randomwalk = async (row, col, path) => {
+    if (doneSearching) {
+      return;
+    }
+    if (row < 0 || col < 0 || row >= width || col >= height) {
+      return;
+    }
+    if (nodeStates[row][col].getGoal() && !doneSearching) {
+      tracePath(path, 50);
+      doneSearching = true;
+      return true;
+    }
+    if (nodeStates[row][col].getActive() || nodeStates[row][col].getWall()) {
+      return false;
+    }
+    if (!nodeStates[row][col].getStart()) {
+      setActive(row, col);
+    }
+    await delay(100);
+    for (var i = 0; i < 50; i++) {
+      var randPath = paths[randint(0, 3)];
+      if (
+        await randomwalk(row + randPath[0], col + randPath[1], [
+          ...path,
+          [row, col],
+        ])
+      ) {
+        break;
+      }
+    }
+  };
+
   const drawSelectedOption = (row, col) => {
     switch (selectedOption) {
       case 0:
@@ -175,12 +281,80 @@ function App() {
         break;
       case 3:
         setUnactive(row, col);
+        break;
+      default:
+        setStart(row, col);
+        break;
+    }
+  };
+
+  const runSelectedAlg = async (row, col) => {
+    doneSearching = false;
+    switch (algOption) {
+      case 0:
+        djikstra(row, col, []);
+        break;
+      case 1:
+        astar();
+        break;
+      case 2:
+        randomwalk(row, col, []);
+        break;
+      default:
+        djikstra(row, col, []);
+        break;
     }
   };
 
   return (
     <div>
       <h1 className="title">VISUALG</h1>
+
+      {/* CHOOSING ALGORITHM */}
+      <div className="algorithms">
+        <h2
+          className={algClass[0]}
+          onClick={() => {
+            setAlgClass([
+              "algorithmOption underline",
+              "algorithmOption",
+              "algorithmOption",
+              "algorithmOption",
+            ]);
+            setAlgOption(0);
+          }}
+        >
+          DJIKSTRA
+        </h2>
+        <h2
+          className={algClass[1]}
+          onClick={() => {
+            setAlgClass([
+              "algorithmOption",
+              "algorithmOption underline",
+              "algorithmOption",
+              "algorithmOption",
+            ]);
+            setAlgOption(1);
+          }}
+        >
+          A*{" "}
+        </h2>
+        <h2
+          className={algClass[2]}
+          onClick={() => {
+            setAlgClass([
+              "algorithmOption",
+              "algorithmOption",
+              "algorithmOption underline",
+              "algorithmOption",
+            ]);
+            setAlgOption(2);
+          }}
+        >
+          RANDOM WALK{" "}
+        </h2>
+      </div>
 
       {/* CHOOSE DRAWING OPTION */}
       <div className="optionWrapper">
@@ -229,6 +403,8 @@ function App() {
         </span>
       </div>
 
+      <p className="desc">{algDesc[algOption]}</p>
+
       {/* GRID */}
       <div
         className="grid"
@@ -269,10 +445,11 @@ function App() {
           );
         })}
       </div>
+
       <button
         className="vis-button"
-        onClick={() => {
-          djikstra(startNode[0], startNode[1], []);
+        onClick={async () => {
+          await runSelectedAlg(startNode[0], startNode[1]);
         }}
       >
         VISUALIZE
