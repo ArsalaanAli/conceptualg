@@ -9,9 +9,9 @@ function App() {
   const width = 30;
   const paths = [
     [0, 1],
-    [0, -1],
     [1, 0],
     [-1, 0],
+    [0, -1],
   ];
   const [startNode, setStartNode] = useState([15, 10]);
   const [goalNode, setGoalNode] = useState([28, 10]);
@@ -139,6 +139,17 @@ function App() {
     }
   };
 
+  const nextToGoal = (row, col) => {
+    for (var i = 0; i < 4; i++) {
+      if (nodeStates[row + paths[i][0]][col + paths[i][1]]) {
+        if (nodeStates[row + paths[i][0]][col + paths[i][1]].getStart()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
   const setUnactive = (row, col) => {
     if (!nodeStates[row][col].getGoal() && !nodeStates[row][col].getStart()) {
       var tempState = [...nodeStates];
@@ -151,6 +162,9 @@ function App() {
     for (var i = pathArray.length - 1; i >= 1; i--) {
       await delay(delayTime);
       setPath(pathArray[i][0], pathArray[i][1]);
+      if (nextToGoal(pathArray[i][0], pathArray[i][1])) {
+        return;
+      }
     }
   };
 
@@ -185,47 +199,56 @@ function App() {
     djikstra(row, col + 1, [...pathArray, [row, col]]);
   };
 
-  const astar = async () => {
-    console.log(startNode);
-    var currentNode = [...startNode];
+  const astar = async (row, col) => {
+    var queue = [[-1, row, col]];
     var path = [];
-    var nextNode;
     while (!doneSearching) {
-      var cost = 10000;
+      var curNode = getBestNode(queue)[0];
+
+      var x = curNode[1],
+        y = curNode[2];
+      path.push([x, y]);
+      if (nodeStates[x][y].getGoal()) {
+        tracePath(x, y, 200);
+        doneSearching = true;
+        return;
+      }
+      if (nodeStates[x][y].getActive() || nodeStates[x][y].getWall()) {
+        return;
+      }
+      if (!nodeStates[x][y].getStart() && !nodeStates[x][y].getActive()) {
+        setActive(x, y);
+      }
       for (var i = 0; i < 4; i++) {
-        var curCost = heuristic(
-          currentNode[0] + paths[i][0],
-          currentNode[1] + paths[i][1]
-        );
-        if (curCost < cost) {
-          cost = curCost;
-          nextNode = paths[i];
+        var newRow = x + paths[i][0],
+          newCol = y + paths[i][1];
+        if (newRow < 0 || newCol < 0 || newRow >= width || newCol >= height) {
+          continue;
+        }
+        if (nodeStates[newRow][newCol]) {
+          queue.push([heuristic(newRow, newCol), newRow, newCol]);
         }
       }
-      if (cost >= 10000) {
-        break;
-      }
-      if (nodeStates[currentNode[0]][currentNode[1]].getStart()) {
-        path.push([[currentNode[0]], [currentNode[1]]]);
-      }
-      currentNode[0] += nextNode[0];
-      currentNode[1] += nextNode[1];
-      await delay(200);
-      if (
-        !nodeStates[currentNode[0]][currentNode[1]].getGoal() &&
-        !nodeStates[currentNode[0]][currentNode[1]].getStart()
-      ) {
-        setActive([currentNode[0]], [currentNode[1]]);
-        path.push([[currentNode[0]], [currentNode[1]]]);
-      }
-    }
-    if (doneSearching) {
-      console.log(startNode);
-      tracePath(path, 200);
+      await delay(500);
     }
   };
 
+  const getBestNode = (queue) => {
+    var min = 10000000;
+    var ind = 0;
+    for (var i = 0; i < queue.length; i++) {
+      if (queue[i][0] < min) {
+        min = queue[i][0];
+        ind = i;
+      }
+    }
+    return queue.splice(ind, 1);
+  };
+
   const heuristic = (row, col) => {
+    if (row < 0 || col < 0 || row >= width || col >= height) {
+      return 100000;
+    }
     if (nodeStates[row][col].getWall() || nodeStates[row][col].getActive()) {
       return 100000;
     }
@@ -295,7 +318,7 @@ function App() {
         djikstra(row, col, []);
         break;
       case 1:
-        astar();
+        astar(row, col, []);
         break;
       case 2:
         randomwalk(row, col, []);
