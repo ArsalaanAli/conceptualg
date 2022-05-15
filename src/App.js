@@ -17,15 +17,13 @@ function App() {
   const [goalNode, setGoalNode] = useState([28, 10]);
   var doneSearching = false;
   const algDesc = [
-    "DJIKSTRA: SEARCHES SURROUNDING NODES AT EACH STEP, GARUNTEES SHORTEST PATH.",
-    "a",
+    "DIJKSTRA: SEARCHES SURROUNDING NODES AT EACH STEP, GARUNTEES SHORTEST PATH.",
+    "A-STAR: A SMARTER VERSION OF DIJKSTRA, USES HEURISTICS TO CALCULATE NEXT BEST NODE",
     "RANDOM WALK: SIMILAR TO HOW A DRUNK PERSON TRAVERSES A CITY, DOESNT GARUNTEE SHORTEST PATH (OBVIOUSLY)",
     "",
   ];
   const [draw, setDraw] = useState(false);
-  const [dummy, setDummy] = useState(0);
   const [nodeStates, setNodeStates] = useState([]);
-  const [queue, setQueue] = useState([]);
   const [optionClass, setOptionClass] = useState(["underline", "", "", ""]);
   const [algClass, setAlgClass] = useState([
     "algorithmOption underline",
@@ -58,10 +56,6 @@ function App() {
     }
     setNodeStates(stateArray);
   }, []);
-
-  const change = () => {
-    setDummy(dummy + 1);
-  };
 
   const clearBoard = () => {
     const stateArray = [];
@@ -206,12 +200,6 @@ function App() {
     djikstra(row, col + 1, [...pathArray, [row, col]]);
   };
 
-  const addToAstarPath = (curRow, curCol, newRow, newCol) => {
-    var newPath = [...astarPath];
-    newPath[newRow][newCol] = [...astarPath[curRow][curCol], [newRow, newCol]];
-    setAstarPath(newPath);
-  };
-
   const astar = async (row, col) => {
     var queue = [[-1, row, col]];
     addToAstarPath(row, col, row, col);
@@ -220,7 +208,7 @@ function App() {
       var x = curNode[1],
         y = curNode[2];
       if (nodeStates[x][y].getGoal()) {
-        tracePath(astarPath[x][y], 200);
+        tracePath(astarPath[x][y], 100);
         doneSearching = true;
         return;
       }
@@ -243,8 +231,14 @@ function App() {
           addToAstarPath(x, y, newRow, newCol);
         }
       }
-      await delay(200);
+      await delay(50);
     }
+  };
+
+  const addToAstarPath = (curRow, curCol, newRow, newCol) => {
+    var newPath = [...astarPath];
+    newPath[newRow][newCol] = [...astarPath[curRow][curCol], [newRow, newCol]];
+    setAstarPath(newPath);
   };
 
   const getBestNode = (queue) => {
@@ -364,7 +358,7 @@ function App() {
             setAlgOption(0);
           }}
         >
-          DJIKSTRA
+          DIJKSTRA
         </h2>
         <h2
           className={algClass[1]}
