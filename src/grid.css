@@ -2,12 +2,13 @@
   display: inline-block;
 }
 .node-wrapper {
-  width: 1em;
-  height: 1em;
+  width: 0.9em;
+  height: 0.9em;
   margin: 0.5em;
 }
 .grid {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0;
 }

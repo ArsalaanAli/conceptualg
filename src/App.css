@@ -10,7 +10,7 @@
   font-family: "Poppins", sans-serif;
   font-weight: 100;
   text-align: center;
-  font-size: 5em;
+  font-size: 4.5em;
   margin: 0;
   padding: 0;
   text-decoration: underline;
@@ -23,11 +23,13 @@
   font-weight: 300;
   text-align: center;
   font-size: 1.5em;
-  margin-bottom: 0.3em;
+  margin: 0;
+  margin-bottom: 0em;
+  margin-top: 0.5em;
 }
 .vis-button {
   margin: auto;
-  margin-top: 1.5em;
+  margin-top: 1em;
   padding: 0em 0.5em;
   display: block;
   font-family: "Poppins", sans-serif;
@@ -44,7 +46,7 @@
 
 .clear-button {
   margin: auto;
-  margin-top: 1em;
+  margin-top: 0.5em;
   padding: 0em 0.5em;
   display: block;
   font-family: "Poppins", sans-serif;
@@ -150,7 +152,7 @@
 
 .algorithmOption {
   display: inline-block;
-  margin: 0 1em;
+  margin: 0em 1em;
   font-family: "Poppins", sans-serif;
   font-size: 2em;
   font-weight: 200;
