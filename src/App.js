@@ -35,6 +35,10 @@ function App() {
   ]);
   const [selectedOption, setSelectedOption] = useState(0);
   const [algOption, setAlgOption] = useState(0);
+  const [astarPath, setAstarPath] = useState(
+    new Array(width).fill(0).map(() => new Array(height).fill([]))
+  );
+
   useEffect(() => {
     const stateArray = [];
     for (var i = 0; i < width; i++) {
@@ -124,7 +128,7 @@ function App() {
   };
 
   const setPath = (row, col) => {
-    if (!nodeStates[row][col].getStart()) {
+    if (!nodeStates[row][col].getStart() && !nodeStates[row][col].getGoal()) {
       var tempState = [...nodeStates];
       tempState[row][col].setPath();
       setNodeStates(tempState);
@@ -139,23 +143,26 @@ function App() {
     }
   };
 
-  const nextToGoal = (row, col) => {
-    for (var i = 0; i < 4; i++) {
-      if (nodeStates[row + paths[i][0]][col + paths[i][1]]) {
-        if (nodeStates[row + paths[i][0]][col + paths[i][1]].getStart()) {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
-
   const setUnactive = (row, col) => {
     if (!nodeStates[row][col].getGoal() && !nodeStates[row][col].getStart()) {
       var tempState = [...nodeStates];
       tempState[row][col].setUnactive();
       setNodeStates(tempState);
     }
+  };
+
+  const nextToGoal = (row, col) => {
+    for (var i = 0; i < 4; i++) {
+      var newRow = row + paths[i][0],
+        newCol = col + paths[i][1];
+      if (newRow < 0 || newCol < 0 || newRow >= width || newCol >= height) {
+        continue;
+      }
+      if (nodeStates[newRow][newCol].getStart()) {
+        return true;
+      }
+    }
+    return false;
   };
 
   const tracePath = async (pathArray, delayTime) => {
@@ -199,22 +206,27 @@ function App() {
     djikstra(row, col + 1, [...pathArray, [row, col]]);
   };
 
+  const addToAstarPath = (curRow, curCol, newRow, newCol) => {
+    var newPath = [...astarPath];
+    newPath[newRow][newCol] = [...astarPath[curRow][curCol], [newRow, newCol]];
+    setAstarPath(newPath);
+  };
+
   const astar = async (row, col) => {
     var queue = [[-1, row, col]];
-    var path = [];
+    addToAstarPath(row, col, row, col);
     while (!doneSearching) {
       var curNode = getBestNode(queue)[0];
-
       var x = curNode[1],
         y = curNode[2];
-      path.push([x, y]);
       if (nodeStates[x][y].getGoal()) {
-        tracePath(x, y, 200);
+        tracePath(astarPath[x][y], 200);
         doneSearching = true;
         return;
       }
       if (nodeStates[x][y].getActive() || nodeStates[x][y].getWall()) {
-        return;
+        console.log("ok");
+        continue;
       }
       if (!nodeStates[x][y].getStart() && !nodeStates[x][y].getActive()) {
         setActive(x, y);
@@ -226,10 +238,12 @@ function App() {
           continue;
         }
         if (nodeStates[newRow][newCol]) {
+          console.log(newRow, newCol);
           queue.push([heuristic(newRow, newCol), newRow, newCol]);
+          addToAstarPath(x, y, newRow, newCol);
         }
       }
-      await delay(500);
+      await delay(200);
     }
   };
 
@@ -253,10 +267,13 @@ function App() {
       return 100000;
     }
     if (nodeStates[row][col].getGoal()) {
-      doneSearching = true;
       return -100;
     }
-    return Math.abs(goalNode[0] - row) + Math.abs(goalNode[1] - col);
+    return (
+      Math.abs(goalNode[0] - row) +
+      Math.abs(goalNode[1] - col) +
+      (Math.abs(startNode[0] - row) + Math.abs(startNode[1] - col))
+    );
   };
 
   const randomwalk = async (row, col, path) => {
