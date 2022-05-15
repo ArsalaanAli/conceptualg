@@ -55,6 +55,7 @@ function App() {
       stateArray.push(temp);
     }
     setNodeStates(stateArray);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const clearBoard = () => {
