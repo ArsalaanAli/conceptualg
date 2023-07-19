@@ -4,4 +4,4 @@ Sandbox visualizer that allows you to visulize A*, Random-Walk, and Dijkstra's A
 ## Built With ReactJS
 
 ### Try It Yourself
-[VISU-ALG](meek-bombolone-228696.netlify.app)
+[VISU-ALG](https://meek-bombolone-228696.netlify.app/)
